@@ -1,0 +1,32 @@
+Sure, here is the update script in one file, called `update.py`:
+
+```python
+import subprocess
+
+def update_script():
+    """Updates the Windows performance booster script."""
+
+    # Get the current version of the script.
+    version = subprocess.check_output(["git", "describe"]).decode("utf-8").strip()
+
+    # Check if there is a newer version available.
+    latest_version = subprocess.check_output(["git", "latest", "--short"]).decode("utf-8").strip()
+
+    if version != latest_version:
+        # Update the script.
+        subprocess.run(["git", "pull"])
+
+        # Print a message to the user.
+        print("The Windows performance booster script has been updated to version {}.".format(latest_version))
+
+if __name__ == "__main__":
+    update_script()
+```
+
+You can save this file as `update.py` in the same directory as your Windows performance booster script. Then, you can run the update script by typing the following command in your terminal:
+
+```
+python update.py
+```
+
+The update script will check if there is a newer version of your Windows performance booster script available on GitHub. If there is, the script will update the script and print a message to the user.
