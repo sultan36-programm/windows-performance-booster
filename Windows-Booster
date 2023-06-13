@@ -1,38 +1,45 @@
-import wmi
-import win32api
+import subprocess
+import os
 
-def get_current_cpu_speed():
-    c = wmi.WMI()
-    cpu = c.query("Select * from Win32_Processor")[0]
-    return cpu.CurrentClockSpeed
+def boost_performance():
+    """Boosts the performance of the Windows operating system."""
 
-def get_current_graphics_performance():
-    return win32api.GetSystemMetrics(win32api.SM_CXSCREEN) * win32api.GetSystemMetrics(win32api.SM_CYSCREEN)
+    # Disable Windows services that are not essential for performance.
+    subprocess.run(["sc", "config", "wuauserv", "start=disabled"])
+    subprocess.run(["sc", "config", "bits", "start=disabled"])
+    subprocess.run(["sc", "config", "csrss", "start=disabled"])
 
-def increase_cpu_speed(max_speed):
-    c = wmi.WMI()
-    cpu = c.query("Select * from Win32_Processor")[0]
-    cpu.CurrentClockSpeed = max_speed
+    # Disable Windows animations.
+    os.system("reg add HKCU\Control Panel\Desktop /v MouseAnimationSpeed /t REG_DWORD /d 0 /f")
+    os.system("reg add HKCU\Control Panel\Desktop /v VisualStyleEffects /t REG_DWORD /d 0 /f")
 
-def increase_graphics_performance(max_performance):
-    win32api.SetProcessDPIAware()
-    win32api.SetProcessDPIAware()
+    # Disable Windows startup programs.
+    os.system("shell:startup")
+
+    # Defragment the hard drive.
+    subprocess.run(["defrag", "c:"])
 
 def main():
-    current_cpu_speed = get_current_cpu_speed()
-    current_graphics_performance = get_current_graphics_performance()
+    """Boosts the performance of the Windows operating system."""
 
-    print("Current CPU speed:", current_cpu_speed)
-    print("Current graphics performance:", current_graphics_performance)
+    # Check if the user is an administrator.
+    if not os.geteuid() == 0:
+        print("You must be an administrator to run this script.")
+        return
 
-    max_cpu_speed = current_cpu_speed * 1.5
-    max_graphics_performance = current_graphics_performance * 1.5
+    # Check if the script is already running.
+    if os.path.exists(".booster_running"):
+        print("The Windows performance booster script is already running.")
+        return
 
-    increase_cpu_speed(max_cpu_speed)
-    increase_graphics_performance(max_graphics_performance)
+    # Create a file to indicate that the script is running.
+    open(".booster_running", "w").close()
 
-    print("New CPU speed:", get_current_cpu_speed())
-    print("New graphics performance:", get_current_graphics_performance())
+    # Boost performance.
+    boost_performance()
+
+    # Remove the file indicating that the script is running.
+    os.remove(".booster_running")
 
 if __name__ == "__main__":
     main()
