@@ -1,0 +1,38 @@
+import wmi
+import win32api
+
+def get_current_cpu_speed():
+    c = wmi.WMI()
+    cpu = c.query("Select * from Win32_Processor")[0]
+    return cpu.CurrentClockSpeed
+
+def get_current_graphics_performance():
+    return win32api.GetSystemMetrics(win32api.SM_CXSCREEN) * win32api.GetSystemMetrics(win32api.SM_CYSCREEN)
+
+def increase_cpu_speed(max_speed):
+    c = wmi.WMI()
+    cpu = c.query("Select * from Win32_Processor")[0]
+    cpu.CurrentClockSpeed = max_speed
+
+def increase_graphics_performance(max_performance):
+    win32api.SetProcessDPIAware()
+    win32api.SetProcessDPIAware()
+
+def main():
+    current_cpu_speed = get_current_cpu_speed()
+    current_graphics_performance = get_current_graphics_performance()
+
+    print("Current CPU speed:", current_cpu_speed)
+    print("Current graphics performance:", current_graphics_performance)
+
+    max_cpu_speed = current_cpu_speed * 1.5
+    max_graphics_performance = current_graphics_performance * 1.5
+
+    increase_cpu_speed(max_cpu_speed)
+    increase_graphics_performance(max_graphics_performance)
+
+    print("New CPU speed:", get_current_cpu_speed())
+    print("New graphics performance:", get_current_graphics_performance())
+
+if __name__ == "__main__":
+    main()
